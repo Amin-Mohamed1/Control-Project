@@ -8,10 +8,13 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "~5.0.0",
+    "sass": "^1.74.1",
+    "sass-loader": "^14.1.1"
   }
 }

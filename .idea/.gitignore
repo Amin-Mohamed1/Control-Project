@@ -7,6 +7,5 @@
 /dataSources/
 /dataSources.local.xml
 
-# Node modules
-/Front-end/node_modules
+
 
