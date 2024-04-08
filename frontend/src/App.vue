@@ -2,11 +2,12 @@
   <div id="app">
     <h1> Signal Flow Graph</h1>
     <div class="tool-wrapper">
-      <select v-model="newNodeType">
+      <!-- <select v-model="newNodeType">
         <option v-for="(item, index) in nodeCategory" :key="index" :value="index">{{item}}</option>
-      </select>
-      <input type="text" v-model="newNodeLabel" placeholder="Input node label">
-      <button @click="addNode">ADD</button>
+      </select> -->
+      <!-- <input type="text" v-model="newNodeLabel" placeholder="Input node label"> -->
+      <button @click="addNode">ADD NODE</button>
+      <button @click="getTransferFunction">GET TRANSFER FUNCTION</button>
     </div>
     
     <simple-flowchart :scene.sync="scene" 
@@ -75,6 +76,24 @@ export default {
     }
   },
   methods: {
+    getTransferFunction() {
+      var adjMatrix = []
+      var nodes = this.scene.nodes
+      var links = this.scene.links
+      var n = nodes.length
+      for (var i = 0; i < n; i++) {
+        adjMatrix.push([])
+        for (var j = 0; j < n; j++) {
+          adjMatrix[i].push(0)
+        }
+      }
+      for (var i = 0; i < links.length; i++) {
+        adjMatrix[links[i].from-1][links[i].to-1] = links[i].weight
+      }
+      
+    console.log('adjMatrix:', adjMatrix)
+    
+  },
     canvasClick(e) {
       console.log('canvas Click, event:', e)
     },

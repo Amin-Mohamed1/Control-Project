@@ -10,7 +10,7 @@
     </div>
     <div class="node-main">
       <!-- <div v-text="type" class="node-type"></div> -->
-      <div v-text="id" class="node-label"></div>
+      <div v-text="id-1" class="node-label"></div>
     </div>
     <div class="node-port node-output" 
       @mousedown="outputMouseDown">
