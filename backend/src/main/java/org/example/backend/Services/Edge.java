@@ -1,13 +1,19 @@
 package org.example.backend.Services;
-import java.util.*;
-public class Edge {
-    Node source;
-    Node destination;
-    double gain;
 
-    public Edge(Node source, Node destination, double gain) {
-        this.source = source;
+public class Edge {
+    private final Node destination;
+    private final double gain;
+
+    public Edge(Node destination, double gain) {
         this.destination = destination;
         this.gain = gain;
+    }
+
+    public Node getDestination() {
+        return destination;
+    }
+
+    public double getGain() {
+        return gain;
     }
 }
