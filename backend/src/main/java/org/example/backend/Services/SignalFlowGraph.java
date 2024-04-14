@@ -137,7 +137,6 @@ public class SignalFlowGraph {
             allPaths.add(new ArrayList<>(currentPath));
             return;
         }
-
         for (Edge edge : current.edges) {
             if (!currentPath.contains(edge.destination)) {
                 currentPath.add(edge.destination);
@@ -146,5 +145,4 @@ public class SignalFlowGraph {
             }
         }
     }
-
 }

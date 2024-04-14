@@ -1,17 +1,43 @@
 package org.example.backend.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.*;
+
 @RestController()
 @CrossOrigin("*")
-
+@RequestMapping(path = "/programming_assignment")
 public class Control {
-    @PostMapping("/compute")
-    public void simulation(@RequestBody List<ElementDto> dtos) throws InterruptedException {
-//            ServiceFacade s = new ServiceFacade() ;
-        System.out.println("arrive");
-        s.startSimulation(dtos) ;
-        System.out.println("end computation");
-        return ;
+    @PostMapping(path = "/computeTransferFunction")
+    public double[][] signalflow(@RequestBody Map<String, Object> payload){
+        HashMap<String, String> response = new HashMap<>();
+        String matrix = payload.get("adjacency_matrix").toString();
+        String[] rows = matrix.split("]");
+        int n = rows.length;
+        double[][] adjMatrix = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            String[] row = rows[i].split(",");
+            for (int j = 0; j < n; j++) {
+                String cell = row[j];
+                cell = cell.replaceAll("[^0-9]", "");
+                adjMatrix[i][j] = Double.parseDouble(cell);
+            }
+        }
+        return adjMatrix;
+    }
+
+
+    @PostMapping(path = "/computeRouthArray")
+    public double routh(@RequestBody Map<String, Object> requestBody){
+        Object[] dataArray = (Object[]) requestBody.get("data");
+        double[] doublesArray = new double[dataArray.length];
+        for (int i = 0; i < dataArray.length; i++) {
+            doublesArray[i] = ((Number) dataArray[i]).doubleValue();
+        }
+        //double result = RcomputeRouthArray(doublesArray);
+        for(double i : doublesArray){
+            System.out.println(i + " ");
+        }
+        return 0.0;
     }
 }
 //class MessageController {
