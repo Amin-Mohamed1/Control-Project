@@ -1,3 +1,5 @@
+
+/*
 package org.example.backend.Services;
 import java.util.*;
 public class SignalFlowGraph {
@@ -141,6 +143,128 @@ public class SignalFlowGraph {
             if (!currentPath.contains(edge.destination)) {
                 currentPath.add(edge.destination);
                 findPaths(edge.destination, dest, currentPath, allPaths);
+                currentPath.remove(currentPath.size() - 1);
+            }
+        }
+    }
+}
+
+
+*/
+
+package org.example.backend.Services;
+
+import java.util.*;
+
+public class SignalFlowGraph {
+    private final List<Node> nodes;
+
+    public SignalFlowGraph() {
+        nodes = new ArrayList<>();
+    }
+
+    public void addNode(String name) {
+        nodes.add(new Node(name));
+    }
+
+    public void addEdge(String sourceName, String destName, double gain) {
+        Node source = getNode(sourceName);
+        Node dest = getNode(destName);
+        if (source != null && dest != null) {
+            source.addEdge(dest, gain);
+        }
+    }
+
+    private Node getNode(String name) {
+        for (Node node : nodes) {
+            if (node.getName().equals(name)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public double masonsGainFormula(String sourceName, String destName) {
+        List<List<Node>> allPaths = findAllPaths(sourceName, destName);
+        List<Double> forwardPathsGain = new ArrayList<>();
+
+
+        // Calculate total forward path gain
+        for (List<Node> path : allPaths) {
+            double forwardPathGain = computeForwardPathGain(path);
+            forwardPathsGain.add(forwardPathGain);
+        }
+
+        // Print all lists
+        System.out.print("All Paths:");
+        int i = 0;
+        for (List<Node> path : allPaths) {
+            System.out.print(pathToString(path));
+            System.out.print(", Gain = " + forwardPathsGain.get(i));
+            i++;
+        }
+        return 0;
+    }
+
+    private String pathToString(List<Node> path) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < path.size(); i++) {
+            sb.append(path.get(i).getName());
+            if (i < path.size() - 1) {
+                sb.append(" -> ");
+            }
+        }
+        return sb.toString();
+    }
+
+
+    private double computeForwardPathGain(List<Node> path) {
+        double gain = 1.0;
+        for (int i = 0; i < path.size() - 1; i++) {
+            Node source = path.get(i);
+            Node dest = path.get(i + 1);
+            Edge edge = getEdge(source, dest);
+            if (edge != null) {
+                gain *= edge.getGain();
+            } else {
+                return 0.0;
+            }
+        }
+        return gain;
+    }
+
+    private Edge getEdge(Node source, Node destination) {
+        for (Edge edge : source.getEdges()) {
+            if (edge.getDestination() == destination) {
+                return edge;
+            }
+        }
+        return null;
+    }
+
+    private List<List<Node>> findAllPaths(String sourceName, String destName) {
+        Node source = getNode(sourceName);
+        Node dest = getNode(destName);
+        if (source == null || dest == null) {
+            return new ArrayList<>();
+        }
+
+        List<List<Node>> allPaths = new ArrayList<>();
+        List<Node> currentPath = new ArrayList<>();
+        currentPath.add(source);
+        findPaths(source, dest, currentPath, allPaths);
+        return allPaths;
+    }
+
+    private void findPaths(Node current, Node dest, List<Node> currentPath, List<List<Node>> allPaths) {
+        if (current == dest) {
+            allPaths.add(new ArrayList<>(currentPath));
+            return;
+        }
+        for (Edge edge : current.getEdges()) {
+            if (!currentPath.contains(edge.getDestination())) {
+                currentPath.add(edge.getDestination());
+                findPaths(edge.getDestination(), dest, currentPath, allPaths);
                 currentPath.remove(currentPath.size() - 1);
             }
         }
