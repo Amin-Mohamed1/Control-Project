@@ -1,76 +1,10 @@
-
-/*
-
-
-
-
-    public List<Set<Node>> findNonTouchingLoops() {
-        List<Set<Node>> nonTouchingLoops = new ArrayList<>();
-        List<List<Node>> allLoops = findAllLoops();
-        for (int i = 0; i < allLoops.size(); i++) {
-            for (int j = i + 1; j < allLoops.size(); j++) {
-                if (!isTouching(allLoops.get(i), allLoops.get(j))) {
-                    Set<Node> nonTouchingPair = new HashSet<>();
-                    nonTouchingPair.addAll(allLoops.get(i));
-                    nonTouchingPair.addAll(allLoops.get(j));
-                    nonTouchingLoops.add(nonTouchingPair);
-                }
-            }
-        }
-
-        return nonTouchingLoops;
-    }
-
-
-
-    private boolean isTouching(List<Node> loop1, List<Node> loop2) {
-        for (Node node : loop1) {
-            if (loop2.contains(node)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    public void fromAdjacencyMatrix(double[][] matrix) {
-        Map<Integer, Node> nodeMap = new HashMap<>();
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] != 0) {
-                    Node source = nodeMap.computeIfAbsent(i, k -> new Node(String.valueOf(k)));
-                    Node dest = nodeMap.computeIfAbsent(j, k -> new Node(String.valueOf(k)));
-                    source.edges.add(new Edge(source, dest, matrix[i][j]));
-                }
-            }
-        }
-        this.nodes.addAll(nodeMap.values());
-    }
-
-
-
-    public List<List<Node>> loopsNonTouchingPath(List<Node> path, List<List<Node>> loops) {
-        List<List<Node>> nonTouchingLoops = new ArrayList<>();
-        for (List<Node> loop : loops) {
-            if (!isTouching(path, loop)) {
-                nonTouchingLoops.add(loop);
-            }
-        }
-        return nonTouchingLoops;
-    }
-
-}
-
-
-*/
-
 package org.example.backend.Services;
 
 import java.util.*;
 
 public class SignalFlowGraph {
     private HashMap<Integer, Double> loopsGain = new HashMap<>();
-
     private final List<Node> nodes;
-
     public SignalFlowGraph() {
         nodes = new ArrayList<>();
     }
@@ -117,44 +51,61 @@ public class SignalFlowGraph {
         // Print all lists
         System.out.println("All Paths:");
         int i = 0;
+        StringBuilder forwardPathString = new StringBuilder();
         for (List<Node> path : allPaths) {
-            System.out.print(pathToString(path));
-            System.out.print(", Gain = " + forwardPathsGain.get(i));
+            forwardPathString.append(pathToString(path));
+            forwardPathString.append(", Gain = ").append(forwardPathsGain.get(i));
             i++;
-            System.out.println();
+            forwardPathString.append("\n");
         }
+        System.out.println(forwardPathString);
 
         // Print all loops
         System.out.println("All Loops:");
         i=0;
+        StringBuilder allLoopsString = new StringBuilder();
         for(List<Node> loop : allLoops){
             loopsGain.put(i, allLoopsGain.get(i));
-            System.out.print("Loop " + (i+1) + ": ");
-            System.out.println(loopToString(loop));
-            System.out.print(", Gain = " + allLoopsGain.get(i));
+            allLoopsString.append("Loop ").append(i + 1).append(": ");
+            allLoopsString.append(loopToString(loop));
+            allLoopsString.append(", Gain = ").append(allLoopsGain.get(i));
             i++;
-            System.out.println();
+            allLoopsString.append("\n");
         }
+        System.out.println(allLoopsString);
 
         //Print all non-touching loops
         System.out.println("All Non-Touching Loops:");
+        StringBuilder nonTouchingLoopString = new StringBuilder();
         for(int[] nonTouchingLoop : nonTouchingLoops){
-            System.out.print("Loop " + (nonTouchingLoop[0]+1) + " and Loop " + (nonTouchingLoop[1]+1) + " Gain = " + allLoopsGain.get(nonTouchingLoop[0]) * allLoopsGain.get(nonTouchingLoop[1]));
-            System.out.println();
+            nonTouchingLoopString.append("Loop ").append(nonTouchingLoop[0] + 1).append(" and Loop ").append(nonTouchingLoop[1] + 1).append(" Gain = ").append(allLoopsGain.get(nonTouchingLoop[0]) * allLoopsGain.get(nonTouchingLoop[1])).append("\n");
         }
+        System.out.println(nonTouchingLoopString);
 
-        System.out.println("Delta = " + getDelta(nonTouchingLoops));
+        //Calculate delta
+        double delta = getDelta(nonTouchingLoops);
+        StringBuilder deltaString = new StringBuilder();
+        deltaString.append("Delta = ").append(delta);
+        System.out.println(deltaString);
 
         // Calculate the Delta i for all paths
         i=0;
         List<Double> deltaIList = new ArrayList<>();
+        StringBuilder deltaIString = new StringBuilder();
         for (List<Node> path : allPaths) {
             i++;
             double deltaI = getDeltaI(nonTouchingLoops, path, allLoops);
-            System.out.println("Delta " + i + " = " + deltaI);
+            deltaIString.append("Delta " + i + " = " + deltaI + "\n");
             deltaIList.add(deltaI);
         }
-        return 0;
+        System.out.println(deltaIString);
+        // Calculate TF
+        double TF=0;
+        for(int j=0;j<forwardPathsGain.size();j++){
+            TF += forwardPathsGain.get(j) * deltaIList.get(j);
+        }
+        TF /= delta;
+        return TF;
     }
 
     private String pathToString(List<Node> path) {
